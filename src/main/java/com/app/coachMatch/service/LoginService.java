@@ -1,10 +1,6 @@
 package com.app.coachMatch.service;
 
-import com.app.coachMatch.entity.User;
 import com.app.coachMatch.repository.LoginRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 

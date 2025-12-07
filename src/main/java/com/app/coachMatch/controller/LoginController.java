@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.coachMatch.service.LoginService;
+import com.app.coachMatch.util.JwtUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +15,11 @@ import java.util.Map;
 @RequestMapping("/api")
 public class LoginController {
   private final LoginService service;
+  private final JwtUtil jwtUtil;
 
-  public LoginController(LoginService service) {
+  public LoginController(LoginService service, JwtUtil jwtUtil) {
     this.service = service;
+    this.jwtUtil = jwtUtil;
   }
 
   @PostMapping("/login")
@@ -24,7 +27,27 @@ public class LoginController {
     String username = request.get("username");
     String password = request.get("password");
     boolean success = service.login(username, password);
-    return Map.of("success", success);
+    if (success) {
+      String token = jwtUtil.generateToken(username);
+      return Map.of(
+          "result", true,
+          "token", token,
+          "username", username
+      // "roles", ["ROLE_USER"] ,
+      );
+    } else {
+      return Map.of(
+          "result", false,
+          "username", username
+      // "roles", ["ROLE_USER"] ,
+      );
+    }
   }
 
+  @PostMapping("/logout")
+  public Map<String, Object> logout() {
+    return Map.of(
+        "result", true,
+        "message", "logged out");
+  }
 }
